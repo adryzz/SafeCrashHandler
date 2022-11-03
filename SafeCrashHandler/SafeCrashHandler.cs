@@ -54,6 +54,10 @@ public static class SafeCrashHandler
         {
             do
             {
+                if (CrashCounter > 0)
+                {
+                    Console.WriteLine($"[crash-handler] App restarted after {CrashCounter} crash(es)");
+                }
                 StartDaemon();
             } while (RestartAppOnCrash);
             
