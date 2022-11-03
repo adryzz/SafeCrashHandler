@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.Versioning;
 using Microsoft.Diagnostics.Runtime;
 using InvalidOperationException = System.InvalidOperationException;
@@ -11,7 +10,7 @@ namespace SafeCrashHandler;
 /// <summary>
 /// This class allows an app to safely handle crashes, along with a memory dump of the crashed application.
 /// </summary>
-public static class SafeCrashHandler
+public static class CrashHandler
 {
     internal static Mutex Mutex = null!;
 
@@ -93,7 +92,7 @@ public static class SafeCrashHandler
             ProcessStartInfo info = new ProcessStartInfo(path, string.Join(' ', Environment.GetCommandLineArgs()));
             info.Environment["SafeCrashHandler.CrashCounter"] = CrashCounter.ToString();
             
-            Process app = Process.Start(info);
+            Process app = Process.Start(info)!;
             Debug.WriteLine("[crash-handler] Crash handler started!");
             
             // This makes sure that the target app has created the mutex
