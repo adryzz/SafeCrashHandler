@@ -4,8 +4,8 @@ namespace SafeCrashHandler;
 
 public class SafeCrashHandlerEventArgs : EventArgs
 {
-    private DataTarget Target;
-        
+    public DataTarget Target;
+
     internal SafeCrashHandlerEventArgs(DataTarget target)
     {
         Target = target;

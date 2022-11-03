@@ -30,6 +30,16 @@ public static class SafeCrashHandler
     /// This event gets fired right before the application exits.
     /// </summary>
     public static event EventHandler? OnExit;
+
+    /// <summary>
+    /// This keeps count of how many times the application has crashed before.
+    /// </summary>
+    public static uint CrashCounter { get; private set; }
+    
+    /// <summary>
+    /// If set to true, the crash handler will restart the application when it crashes.
+    /// </summary>
+    public static bool RestartAppOnCrash { get; set; }
     
     // Not really the intended purpose of a module initializer, but it does what i want
     //[ModuleInitializer]
@@ -42,7 +52,13 @@ public static class SafeCrashHandler
         Mutex = new Mutex(true, ModuleName, out bool created);
         if (created)
         {
-            StartDaemon();
+            do
+            {
+                StartDaemon();
+            } while (RestartAppOnCrash);
+            
+            Mutex.Dispose();
+            Environment.Exit(0);
         }
         else
         {
@@ -85,8 +101,9 @@ public static class SafeCrashHandler
                     OnCrash?.Invoke(null, new SafeCrashHandlerEventArgs(target));
                     // Use the memory dump, copy it or something
                     // You can also do stuff on the running (but paused) live process
-                        
+                    
                     target.Dispose();
+                    CrashCounter++;
                     m.ReleaseMutex();
                     Debug.WriteLine("[crash-handler] Exit signal sent!");
                     break;
@@ -105,9 +122,7 @@ public static class SafeCrashHandler
         }
         else
         {
-            Console.WriteLine("[crash-handler] Error while starting SafeApp.");
+            Console.WriteLine("[crash-handler] Error while starting the crash handler.");
         }
-        Mutex.Dispose();
-        Environment.Exit(0);
     }
 }
