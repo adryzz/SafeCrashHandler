@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.Versioning;
 using Microsoft.Diagnostics.Runtime;
 using InvalidOperationException = System.InvalidOperationException;
 
@@ -47,6 +48,8 @@ public static class SafeCrashHandler
     /// <summary>
     /// Sets up the crash handler. Should be called at the start of your entrypoint, after subscribing to the <see cref="SafeCrashHandler"/> events.
     /// </summary>
+    [SupportedOSPlatform("windows")]
+    [SupportedOSPlatform("linux")]
     public static void Start()
     {
         Mutex = new Mutex(true, ModuleName, out bool created);
