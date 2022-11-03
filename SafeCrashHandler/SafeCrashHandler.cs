@@ -42,9 +42,6 @@ public static class SafeCrashHandler
     /// </summary>
     public static bool RestartAppOnCrash { get; set; }
     
-    // Not really the intended purpose of a module initializer, but it does what i want
-    //[ModuleInitializer]
-    
     /// <summary>
     /// Sets up the crash handler. Should be called at the start of your entrypoint, after subscribing to the <see cref="SafeCrashHandler"/> events.
     /// </summary>
@@ -69,6 +66,9 @@ public static class SafeCrashHandler
         }
         else
         {
+            uint.TryParse((Environment.GetEnvironmentVariable("SafeCrashHandler.CrashCounter") ?? "0"), out uint count);
+            CrashCounter = count;
+            
             Mutex m = new Mutex(true, $"{ModuleName}1", out bool created1);
             if (!created1)
                 throw new InvalidOperationException("[crash-handler] The mutex already exists");
@@ -90,7 +90,10 @@ public static class SafeCrashHandler
     {
         if (Environment.ProcessPath is { } path)
         {
-            Process app = Process.Start(path, Environment.GetCommandLineArgs());
+            ProcessStartInfo info = new ProcessStartInfo(path, string.Join(' ', Environment.GetCommandLineArgs()));
+            info.Environment["SafeCrashHandler.CrashCounter"] = CrashCounter.ToString();
+            
+            Process app = Process.Start(info);
             Debug.WriteLine("[crash-handler] Crash handler started!");
             
             // This makes sure that the target app has created the mutex

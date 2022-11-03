@@ -4,10 +4,14 @@
     {
         static void Main(string[] args)
         {
+            SafeCrashHandler.RestartAppOnCrash = true;
             SafeCrashHandler.OnUnhandledException += SafeCrashHandlerOnOnUnhandledException;
             SafeCrashHandler.OnCrash += SafeCrashHandlerOnOnCrash;
             SafeCrashHandler.Start();
-            Console.WriteLine("work lol");
+            
+            Console.WriteLine($"Woah! this app crashed {SafeCrashHandler.CrashCounter} time(s)!");
+            
+            Console.WriteLine("doing some work");
             Thread.Sleep(200);
             Console.WriteLine("man this work was so hard");
             Console.ReadLine();
